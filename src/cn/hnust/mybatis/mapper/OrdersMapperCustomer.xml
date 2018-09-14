@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace命名空间，作用就是对sql进行分类化管理 ，理解sql隔离
+注意:使用mapper代理方法开发，namespace有特殊重要的作用-->
+<mapper namespace="cn.hnust.mybatis.mapper.OrdersMapperCustomer">
+	 <!-- 使用resultType来映射 -->
+	 <select id="findOrderUser" resultType="cn.hnust.mybatis.po.OrdersCustomer">
+	 	SELECT orders.*,
+		 	user.username,
+			user.sex,
+			user.address 
+		FROM orders,user 
+		WHERE orders.user_id=user.id
+	 </select>
+	  <!-- 使用resultMap来映射 -->
+	  <!-- type:要映射的类
+	  	   id：resultMap标识名
+	  	   column：数据库里面的名字
+	  	   peoperty：类里面的名字
+	   -->
+	 <resultMap type="cn.hnust.mybatis.po.Orders" id="OrdersResultMap">
+	 		<id  column="id" property="id"/>
+	 		<result column="user_id" property="userId" />
+	 		<result column="number" property="number" />
+	 		<result column="createtime" property="createtime" />
+	 		<result column="note" property="note" />
+	 	<!-- 
+	 		配置映射的关联的用户信息
+	 		association:用与映射关联查询单个对象的信息，映射单个记录
+	 		property：将要关联查询的用户信息映射到Orders中哪个属性
+	 		javaType：映射到user的哪个属性
+	 	 -->
+	 	<association property="user" javaType="cn.hnust.mybatis.po.User">
+	 		<id  column="user_id" property="id"/>
+	 		<result column="username" property="username" />
+	 		<result column="sex" property="sex" />
+	 		<result column="address" property="address" />
+	 	</association>
+	 </resultMap>
+	  <!-- 使用resultMap来映射 -->
+	 <select id="findOrderUserResultMap" resultMap="OrdersResultMap">
+	 	SELECT orders.*,
+		 	user.username,
+			user.sex,
+			user.address 
+		FROM orders,user 
+		WHERE orders.user_id=user.id
+	 </select>
+	 
+	 <!-- 订单及订单明细的resultMap
+	 	使用extends继承，不用在配置订单信息和用户信息
+	  -->
+	  <resultMap type="cn.hnust.mybatis.po.Orders" id="OrdersAndOrderdetailResultMap"
+	 	extends="OrdersResultMap">
+	  <!-- 订单信息，使用extends继承  -->
+	  <!-- 用户信息， 使用extends继承 -->
+	  
+	  <!-- 订单明细信息 
+	  一个订单关联查询出了多条明细，要使用collection进行映射
+	  collection：对关联查询到多条记录映射到集合对象中
+	  property：将关联查询到多条记录映射到Orders属性中
+	  ofType:指定映射到list集合属性中pojo的类型
+	  -->
+		  <collection property="orderdetail" ofType="cn.hnust.mybatis.po.Orderdetail">
+		  <!-- id:订单明细唯一标识
+		  		property：要将订单明细的唯一标识映射到Orderdetail的某个属性
+		   -->
+		   	<id  column="orderdetail_id" property="id"/>
+		   	<result column="items_id" property="itemsId"/>
+		   	<result column="items_num" property="itemsNum"/>
+		   	<result column="orders_id" property="ordersId"/>
+		  </collection>
+	 </resultMap>
+	 <select id="findOrdersAndOrderdetailResultMap" resultMap="OrdersAndOrderdetailResultMap">
+	  	SELECT orders.*,
+		  	user.username,
+			user.sex,
+			user.address,
+			orderdetail.id orderdetail_id,
+			orderdetail.items_id,
+			orderdetail.items_num 
+		FROM orders,user,orderdetail
+		WHERE orders.user_id=user.id AND orders.id=orderdetail.orders_id
+	 </select>
+	
+</mapper>

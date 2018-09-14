@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+
+	
+	<!-- 加载配置文件 -->
+	<properties resource="db.properties"></properties>
+	
+	<settings>
+		<!-- 开启二级缓存 -->
+		<setting name="cacheEnabled" value="true"/>
+	</settings>
+		<!-- 别名 -->
+	<typeAliases>
+	<!-- 单个加载 -->
+		<typeAlias type="cn.hnust.mybatis.first.User" alias="user" />
+	<!-- 批量加载,默认是类名的小写 -->
+		<package name="cn.hnust.mybatis.first"></package>
+	</typeAliases>
+	<!-- 和spring整合后environments配置将废除 -->
+	<environments default="development">
+			<environment id="development">
+			<!-- 使用jdbc事务管理，事务控制由mybatis控制 -->
+					<transactionManager type="JDBC"/>
+			<!-- 数据库连接池，由mybatis管理 -->
+			<dataSource type="POOLED">
+				<property name="driver" value="${jdbc.driver}" />
+				<property name="url" value="${jdbc.url}"></property>
+				<property name="username" value="${jdbc.username}"></property>
+				<property name="password" value="${jdbc.password}"></property>
+			</dataSource>
+			</environment>
+	</environments>
+	
+	<!-- 加载映射文件 -->
+	<mappers>
+		<!-- 单个加载
+		<mapper resource="sqlmap/User.xml"/>
+		<mapper resource="mapper/UserMapper.xml"/> 
+		
+		<mapper resource="mapper/OrdersMapperCustomer.xml"/>
+		 -->
+		<!-- 批量加载
+    	<package name="cn.hnust.mybatis.mapper"/> -->
+	   <mapper resource="mapper/UserMapper.xml"/> 
+	</mappers>
+	
+	
+</configuration>
